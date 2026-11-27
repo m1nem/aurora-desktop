@@ -47,6 +47,7 @@ jobs:
           releaseBody: 'Downloads for Linux (Arch Linux, Ubuntu/Debian, AppImage), Windows, and macOS.'
           releaseDraft: true
           prerelease: false
+          tauriScript: pnpm exec tauri
 
   arch-linux:
     runs-on: ubuntu-24.04
@@ -59,7 +60,7 @@ jobs:
       - name: Install Arch dependencies, Node, and Rust
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel curl wget file openssl webkit2gtk-4.1 gtk3 libayatana-appindicator librsvg nodejs npm rustup github-cli
+          pacman -S --noconfirm base-devel curl wget file openssl webkit2gtk-4.1 gtk3 libayatana-appindicator librsvg nodejs npm rustup github-cli alsa-lib pkgconf
           rustup default stable
 
       - name: Install frontend dependencies
@@ -115,6 +116,7 @@ jobs:
           releaseBody: 'Downloads for Linux (Arch Linux, Ubuntu/Debian, AppImage), Windows, and macOS.'
           releaseDraft: true
           prerelease: false
+          tauriScript: pnpm exec tauri
 
   macos:
     runs-on: macos-latest
@@ -149,3 +151,4 @@ jobs:
           releaseBody: 'Downloads for Linux (Arch Linux, Ubuntu/Debian, AppImage), Windows, and macOS.'
           releaseDraft: true
           prerelease: false
+          tauriScript: pnpm exec tauri
