@@ -72,22 +72,9 @@ jobs:
         run: |
           pacman -Syu --noconfirm
           pacman -S --noconfirm \
-            base-devel \
-            curl \
-            wget \
-            file \
-            git \
-            openssl \
-            webkit2gtk-4.1 \
-            gtk3 \
-            libayatana-appindicator \
-            librsvg \
-            nodejs \
-            npm \
-            rustup \
-            github-cli \
-            alsa-lib \
-            pkgconf
+            base-devel curl wget file git openssl \
+            webkit2gtk-4.1 gtk3 libayatana-appindicator librsvg \
+            nodejs npm rustup github-cli alsa-lib pkgconf
           rustup default stable
 
       - name: Install frontend dependencies
@@ -101,6 +88,7 @@ jobs:
       - name: Package and upload Arch Linux build to Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           mkdir -p dist-arch
@@ -108,8 +96,8 @@ jobs:
           find src-tauri/target/release/bundle -type f \( -name "*.AppImage" -o -name "*.tar.gz" -o -name "*.pkg.tar.zst" \) -exec cp -v {} dist-arch/ \; 2>/dev/null || true
           ARCHIVE_NAME="auroramp-${VERSION}-arch-x86_64.tar.gz"
           tar -czf "${ARCHIVE_NAME}" -C dist-arch .
-          gh release upload "${GITHUB_REF_NAME}" "${ARCHIVE_NAME}" --clobber
-
+          gh release upload "${GITHUB_REF_NAME}" "${ARCHIVE_NAME}" --clobber --repo "$GITHUB_REPOSITORY"
+          
   windows:
     runs-on: windows-latest
     steps:
