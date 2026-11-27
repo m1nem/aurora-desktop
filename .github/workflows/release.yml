@@ -42,9 +42,9 @@ jobs:
           releaseBody: 'Downloads for Linux (Arch Linux, Ubuntu/Debian, AppImage), Windows, and macOS.'
           releaseDraft: true
           prerelease: false
+          tauriBuildCommand: npm run tauri build
 
   arch-linux:
-    needs: linux-deb-appimage
     runs-on: ubuntu-24.04
     container:
       image: archlinux:latest
@@ -104,6 +104,7 @@ jobs:
           releaseBody: 'Downloads for Linux (Arch Linux, Ubuntu/Debian, AppImage), Windows, and macOS.'
           releaseDraft: true
           prerelease: false
+          tauriBuildCommand: npm run tauri build
 
   macos:
     runs-on: macos-latest
@@ -133,3 +134,4 @@ jobs:
           releaseBody: 'Downloads for Linux (Arch Linux, Ubuntu/Debian, AppImage), Windows, and macOS.'
           releaseDraft: true
           prerelease: false
+          tauriBuildCommand: npm run tauri build
