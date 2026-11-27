@@ -1,0 +1,135 @@
+name: Release All Platforms
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  linux-deb-appimage:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build and upload Linux bundles
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'AuroraMP ${{ github.ref_name }}'
+          releaseBody: 'Downloads for Linux (Arch Linux, Ubuntu/Debian, AppImage), Windows, and macOS.'
+          releaseDraft: true
+          prerelease: false
+
+  arch-linux:
+    needs: linux-deb-appimage
+    runs-on: ubuntu-24.04
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Arch dependencies, Node, and Rust
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel curl wget file openssl webkit2gtk-4.1 gtk3 libayatana-appindicator librsvg nodejs npm rustup github-cli
+          rustup default stable
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build Tauri app on Arch Linux
+        run: npm run tauri build
+
+      - name: Package and upload Arch Linux build to Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          mkdir -p dist-arch
+          find src-tauri/target/release -maxdepth 1 -type f -executable ! -name "*.d" -exec cp -v {} dist-arch/ \; 2>/dev/null || true
+          find src-tauri/target/release/bundle -type f \( -name "*.AppImage" -o -name "*.tar.gz" -o -name "*.pkg.tar.zst" \) -exec cp -v {} dist-arch/ \; 2>/dev/null || true
+          ARCHIVE_NAME="auroramp-${VERSION}-arch-x86_64.tar.gz"
+          tar -czf "${ARCHIVE_NAME}" -C dist-arch .
+          gh release upload "${GITHUB_REF_NAME}" "${ARCHIVE_NAME}" --clobber
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build and upload Windows bundles
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'AuroraMP ${{ github.ref_name }}'
+          releaseBody: 'Downloads for Linux (Arch Linux, Ubuntu/Debian, AppImage), Windows, and macOS.'
+          releaseDraft: true
+          prerelease: false
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build and upload macOS bundles
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'AuroraMP ${{ github.ref_name }}'
+          releaseBody: 'Downloads for Linux (Arch Linux, Ubuntu/Debian, AppImage), Windows, and macOS.'
+          releaseDraft: true
+          prerelease: false
