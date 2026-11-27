@@ -1,0 +1,148 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+/* =============================================================================
+   AuroraMP - Modern CLI / Monospace Audio Player
+   High Contrast (WCAG AA compliant), 1px Crisp Borders, Professional CLI UI
+   ============================================================================= */
+
+:root,
+[data-theme="green"],
+[data-theme="dark"] {
+  /* Green Phosphor Terminal Variant */
+  --term-bg: #0a0e0a;
+  --term-bg-panel: #111812;
+  --term-bg-input: #060906;
+  --term-bg-hover: #18261a;
+  --term-border: #234428;
+  --term-border-bright: #22c55e;
+  --term-text: #f0fdf4;
+  --term-text-bright: #ffffff;
+  --term-text-muted: #a3a3a3;
+  --term-text-dim: #737373;
+  --term-invert-bg: #22c55e;
+  --term-invert-text: #060906;
+  --term-accent: #22c55e;
+  --term-tag-bg: #142817;
+  --term-danger: #ef4444;
+  --term-selection-bg: #22c55e;
+  --term-selection-text: #060906;
+}
+
+[data-theme="cool"],
+[data-theme="light"] {
+  /* Modern Cool / Nord / Neovim Monospace Variant */
+  --term-bg: #0d1117;
+  --term-bg-panel: #161b22;
+  --term-bg-input: #0a0d14;
+  --term-bg-hover: #1f2937;
+  --term-border: #30363d;
+  --term-border-bright: #38bdf8;
+  --term-text: #f1f5f9;
+  --term-text-bright: #ffffff;
+  --term-text-muted: #a3a3a3;
+  --term-text-dim: #737373;
+  --term-invert-bg: #38bdf8;
+  --term-invert-text: #0a0d14;
+  --term-accent: #38bdf8;
+  --term-tag-bg: #1e293b;
+  --term-danger: #f87171;
+  --term-selection-bg: #38bdf8;
+  --term-selection-text: #0d1117;
+}
+
+/* The fixed player measures itself and overwrites --player-height at runtime.
+   These values are only the pre-hydration fallback, sized generously enough
+   for the wrapped mobile control layout. */
+:root {
+  --player-height: calc(6rem + env(safe-area-inset-bottom));
+  --content-bottom-gap: 1.5rem;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --player-height: calc(11rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* Tailwind v4 defaults bare borders to currentColor and buttons to the
+   browser's default cursor. Keep the v3 terminal look and pointer affordance. */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--term-border);
+  }
+
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+html {
+  height: 100%;
+  scroll-padding-bottom: calc(var(--player-height) + var(--content-bottom-gap));
+}
+
+body {
+  min-height: 100%;
+  min-height: 100dvh;
+  background-color: var(--term-bg);
+  color: var(--term-text);
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Shared scrollable workspace. Every route uses this class, so the reserved
+   space tracks the player no matter which page is open. */
+.app-main {
+  padding: 1rem;
+  padding-bottom: calc(var(--player-height) + var(--content-bottom-gap));
+  scroll-padding-bottom: calc(var(--player-height) + var(--content-bottom-gap));
+}
+
+@media (min-width: 640px) {
+  .app-main {
+    padding: 1.5rem;
+    padding-bottom: calc(var(--player-height) + var(--content-bottom-gap));
+  }
+}
+
+/* Sharp Terminal Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--term-bg-input);
+  border-left: 1px solid var(--term-border);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--term-border-bright);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--term-text-bright);
+}
+
+::selection {
+  background: var(--term-selection-bg);
+  color: var(--term-selection-text);
+}
+
+/* Backward-compatible utility classes */
+.glass,
+.glass-strong {
+  background: var(--term-bg-panel);
+  border: 1px solid var(--term-border);
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.aurora-text {
+  color: var(--term-border-bright);
+  font-weight: 700;
+}

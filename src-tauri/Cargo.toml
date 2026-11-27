@@ -1,0 +1,52 @@
+[package]
+name = "aurora"
+version = "1.3.0"
+description = "AuroraMP desktop music player"
+authors = ["Aurora"]
+edition = "2024"
+rust-version = "1.85"
+
+# See more keys at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "aurora_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+rodio = { version = "0.20", default-features = false, features = ["symphonia-all"] }
+discord-rich-presence = "0.2"
+tauri = { version = "2", features = ["protocol-asset"] }
+tauri-plugin-log = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite"] }
+lofty = "0.25"
+walkdir = "2"
+tokio = { version = "1", features = ["full"] }
+thiserror = "2"
+base64 = "0.22"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4", "serde", "fast-rng"] }
+log = "0.4"
+dirs = "6"
+urlencoding = "2.1.3"
+csv = "1.4.0"
+qrcode = { version = "0.15.0", features = ["svg"] }
+sha2 = "0.10"
+regex = "1.13.2"
+lettre = { version = "0.11.24", features = ["tokio1-native-tls", "builder"] }
+reqwest = { version = "0.12", features = ["json", "rustls-tls", "stream"] }
+scrypt = "0.12.0"
+rand = "0.8"
+hmac = "0.12"
+sha1 = "0.10"
+hex = "0.4.3"
+keyring = { version = "3.6.3", features = ["sync-secret-service"] }
+
+# http-range is vendored so the Tauri asset protocol builds without
+# network access to the crates.io cache. The crate is unmodified (MIT).
+[patch.crates-io]
+http-range = { path = "vendor/http-range" }
